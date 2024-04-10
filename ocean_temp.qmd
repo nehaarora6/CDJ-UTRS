@@ -1,0 +1,90 @@
+---
+title: "Ocean data cleaning"
+author: Stella Zhang
+format: pdf
+---
+
+```{r}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(readr)
+library(stringr)
+library(forcats)
+```
+
+```{r}
+ocean_data <- read_csv("ocean_data.csv")
+```
+
+```{r}
+graph_one_data <- ocean_data
+graph_one_data$num_temp <- str_extract(graph_one_data$WATER_TEMPERATURE, "\\d+")
+graph_one_data <- graph_one_data |> 
+  mutate(num_temp = as.numeric(num_temp)) |>
+  filter(num_temp > 20 & num_temp < 60)
+#Outliers beyond 60 are excluded.
+graph_one_data |> ggplot(aes(x = factor(BLEACHING_SEVERITY), y = num_temp, 
+                             fill = BLEACHING_SEVERITY)) +
+  geom_boxplot() +
+  labs(
+    x = "Bleanching Severity",
+    y = "Water Temperature (F)",
+    title = "Water Temperature for Corals at Different Levels of Bleanching Severity"
+  ) + 
+  theme_minimal() +
+  theme(
+    legend.position = "none"
+  ) +
+  scale_fill_viridis_d()
+```
+
+```{r}
+graph_one_data |>
+  mutate(REGION = fct_infreq(factor(REGION))) |>
+  ggplot(aes(x = REGION, fill = BLEACHING_SEVERITY)) +
+  geom_bar() +
+  labs(
+    x = "Region",
+    y = "Number of Observations",
+    title = "Coral Bleaching Per Region",
+    fill = "Bleaching Severity"
+  ) + 
+  theme_minimal() +
+  scale_fill_viridis_d() 
+```
+
+```{r}
+graph_one_data |>
+  ggplot(aes(x = REGION, fill = BLEACHING_SEVERITY)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Region",
+    y = "Proportion of Observations",
+    title = "Coral Bleaching Per Region by Percentage",
+    fill = "Bleaching Severity"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 100)) + 
+  theme_minimal() +
+  scale_fill_viridis_d()
+```
+
+```{r}
+graph_one_data |>
+  filter(MORTALITY_CODE != -1 & !is.na(MORTALITY_CODE)) |>
+  ggplot(aes(x = factor(MORTALITY_CODE), y = num_temp, fill = factor(MORTALITY_CODE))) +
+  geom_boxplot()  +
+  labs(
+    x = "Mortality Status",
+    y = "Water Temperature (F)",
+    title = "Water Temperature for Corals at Different Mortality Status"
+  ) + 
+  scale_x_discrete(breaks = c(0, 1, 2, 3), 
+labels = c("0" = "Nearly None", "1" = "Small %", "2" = "About less than 50%", 
+           "3" = "At or more than 50%")) + 
+  theme_minimal() +
+  theme(
+    legend.position = "none"
+  ) +
+  scale_fill_viridis_d()
+```
