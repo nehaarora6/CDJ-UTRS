@@ -28,4 +28,8 @@ def count_unique_vessel_names(file_path):
     # The number of unique names
     return len(unique_names)
 
+#TODO store the number of detections in column AB05 for March 15 for each year
 
+#TODO visualizations of vessel names and detection frequency 
+
+#TODO create a new dataframe that includes only the ships for each year that are of length >= 65 and sog (speed) > 10 knots 
