@@ -27,3 +27,5 @@ def count_unique_vessel_names(file_path):
     
     # The number of unique names
     return len(unique_names)
+
+
