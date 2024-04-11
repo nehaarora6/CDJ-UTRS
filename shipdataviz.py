@@ -13,3 +13,17 @@ print(df_2019.head()) #print dataframe example!
 which is the number of unique names in the VesselName column
 """
 
+import pandas as pd
+
+def count_unique_vessel_names(file_path):
+    # Set the chunk size according to memory availability
+    chunk_size = 50000
+    unique_names = set()  # Use a set to store unique names
+    
+    # Read the dataset in chunks
+    for chunk in pd.read_excel(file_path, chunksize=chunk_size, usecols=['VesselName']):
+        # Update the set with unique names from this chunk
+        unique_names.update(chunk['VesselName'].dropna().unique())
+    
+    # The number of unique names
+    return len(unique_names)
